@@ -12,6 +12,17 @@ if (!defined('ABSPATH')) {
   exit; // Exit if accessed directly.
 }
 
+define( 'WP_SVG_SUPPORT_PLUGIN_FILE', __FILE__ );
+define( 'WP_SVG_SUPPORT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+
+// Composer dependencies (plugin-update-checker). Present in release zips;
+// in a git checkout run `composer install` first.
+if ( is_readable( WP_SVG_SUPPORT_PLUGIN_DIR . 'vendor/autoload.php' ) ) {
+	require_once WP_SVG_SUPPORT_PLUGIN_DIR . 'vendor/autoload.php';
+}
+
+require_once WP_SVG_SUPPORT_PLUGIN_DIR . 'includes/update-checker.php';
+
 class WP_SVG {
   public function __construct() {
     add_filter('upload_mimes', array($this, 'add_svg_mime_type'));
