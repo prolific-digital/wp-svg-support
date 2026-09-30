@@ -1,16 +1,25 @@
 <?php
-/*
-Plugin Name: WP SVG
-Description: Adds support for uploading SVG files to the media library.
-Version: 1.0.0
-Author: Prolific Digital
-Author URI: https://www.prolificdigital.com
-License: GPLv3 or later
-*/
+/**
+ * Plugin Name:       WP SVG
+ * Plugin URI:        https://prolificdigital.com
+ * Description:       Adds support for uploading SVG files to the Media Library.
+ * Version:           1.1.0
+ * Requires at least: 6.5
+ * Requires PHP:      8.4
+ * Author:            Prolific Digital
+ * Author URI:        https://prolificdigital.com
+ * License:           GPL-2.0-or-later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       wp-svg-support
+ * Domain Path:       /languages
+ * Update URI:        https://api.prolificdigital.io/api/update?plugin=wp-svg-support
+ *
+ * @package WPSVGSupport
+ */
 
-if (!defined('ABSPATH')) {
-  exit; // Exit if accessed directly.
-}
+defined( 'ABSPATH' ) || exit;
+
+define( 'WP_SVG_SUPPORT_VERSION', '1.1.0' );
 
 define( 'WP_SVG_SUPPORT_PLUGIN_FILE', __FILE__ );
 define( 'WP_SVG_SUPPORT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
@@ -22,6 +31,16 @@ if ( is_readable( WP_SVG_SUPPORT_PLUGIN_DIR . 'vendor/autoload.php' ) ) {
 }
 
 require_once WP_SVG_SUPPORT_PLUGIN_DIR . 'includes/update-checker.php';
+
+/**
+ * Load bundled translations from /languages (the header's Domain Path).
+ */
+add_action(
+	'init',
+	static function () {
+		load_plugin_textdomain( 'wp-svg-support', false, dirname( plugin_basename( WP_SVG_SUPPORT_PLUGIN_FILE ) ) . '/languages' );
+	}
+);
 
 class WP_SVG {
   public function __construct() {
