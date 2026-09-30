@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [1.1.0] - 2026-09-29
 
+### Security
+- Sanitize every uploaded SVG with `enshrined/svg-sanitize` (shipped in `vendor/`) on `wp_handle_upload_prefilter` and `wp_handle_sideload_prefilter`. Scripts, `on*` event handlers, `javascript:` links and remote references are removed; an upload that cannot be sanitized (or a gzip-compressed SVG) is rejected. SVGs uploaded with earlier versions were not sanitized and should be reviewed.
+- Only users with the `upload_files` capability can upload SVGs. The capability is filterable with `wp_svg_support_upload_capability`.
+- A `.svg` file is accepted only when its content is SVG markup (`wp_check_filetype_and_ext`), so WordPress 6.5+ accepts sanitized SVGs without trusting the extension alone.
+
 ### Changed
 - Adopted the Prolific plugin standard. Updates now come from the Prolific Digital license server (`api.prolificdigital.io`). Set `PROLIFIC_LICENSE_KEY_WP_SVG_SUPPORT` in `wp-config.php` (or use the `prolific_license_key` filter) to receive updates.
 - The main file is renamed from `index.php` to `wp-svg-support.php`. Reactivate the plugin once after updating.

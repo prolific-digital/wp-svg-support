@@ -5,6 +5,8 @@ The WP SVG WordPress plugin empowers your website by adding seamless support for
 ## Features
 
 - Adds support for uploading SVG files to the media library.
+- Sanitizes every uploaded SVG with [enshrined/svg-sanitize](https://github.com/darylldoyle/svg-sanitizer), removing scripts, `on*` event handlers, `javascript:` links and remote references. Files that cannot be sanitized are rejected.
+- Only users with the `upload_files` capability can upload SVGs. Change this with the `wp_svg_support_upload_capability` filter.
 - Clean, well-documented, and object-oriented code for optimal performance.
 
 ## Installation
@@ -27,7 +29,17 @@ Absolutely! WP SVG seamlessly integrates with your existing media library, allow
 
 ### Is there any risk in allowing SVG file uploads?
 
-Yes. SVG files can contain scripts, and this plugin does not sanitize uploads; it only adds `image/svg+xml` to the allowed upload types. Only let trusted users upload SVGs, and only upload files from sources you trust.
+SVG files can contain scripts, so WP SVG sanitizes every SVG when it is uploaded (Media Library, block editor, REST API `/wp/v2/media` and `media_handle_sideload()`). Scripts, `on*` event handlers, `javascript:` links and remote references are removed before the file is saved, and an upload that cannot be sanitized is rejected. Gzip-compressed SVGs are not accepted.
+
+### Who can upload SVGs?
+
+Users with the `upload_files` capability (Authors and above by default). To restrict SVG uploads further, filter the capability:
+
+```php
+add_filter( 'wp_svg_support_upload_capability', fn() => 'manage_options' );
+```
+
+SVGs that were uploaded before version 1.1.0 were not sanitized. Review or re-upload them.
 
 ### Does WP SVG work with the latest WordPress version?
 
@@ -57,7 +69,9 @@ ddev exec -d /var/www/html/wp-content/plugins/wp-svg-support composer lint    # 
 ddev exec -d /var/www/html/wp-content/plugins/wp-svg-support composer phpcs   # WordPress-Extra + PHPCompatibilityWP
 ```
 
-`vendor/` is not committed. A git checkout needs `composer install` before the updater loads. The plugin itself still runs without it.
+`vendor/` is not committed. A git checkout needs `composer install` before the updater and the SVG sanitizer (`enshrined/svg-sanitize`) load. Without it, SVG uploads are rejected. Release zips ship `vendor/`.
+
+Security regression check (plugin active): `ddev wp eval-file wp-content/plugins/wp-svg-support/tests/security/svg-upload.php`
 
 ## Releasing
 
